@@ -1,4 +1,13 @@
 def change_newline(file_path):
+    """
+    Function - change_newline
+    Funkcja zmieniająca znaki końca linii w plikach tekstowych z uniksowych (LF) na windowsowe (CR LF).
+
+    Input:
+    file_path(string) - ścieżka do pliku
+
+    """
+
     file = open(file_path, "rb")
     text = file.readlines()
     file.close()
@@ -13,4 +22,5 @@ def change_newline(file_path):
         file2.write(line)
 
     file2.close()
+    
 change_newline(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\test\er.txt")
