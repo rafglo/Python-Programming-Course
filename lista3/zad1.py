@@ -2,6 +2,19 @@ import zipfile, os, datetime, time
 from pathlib import Path
 
 def copy_mod(folders, out_path, extension, mod_time = 3, mod_format = "d"):
+    """
+    Function - copy_mod
+    Funkcja tworząca kopię bezpieczeństwa plików o danych rozszerzeniach, z danych folderów, modyfikowanych w danym przez użytkownika czasie
+    (funkcja zapisuje plik zip w katalogu Backup, który zostanie utworzony automatycznie jeśli nie istnieje).
+
+    Input:
+    folders(list) - lista folderów, w których znajdują się pliki do kopii
+    out_path(str) - ścieżka do katalogu Backup
+    extension(str) - rozszerzenie plików, których kopię chcemy zrobić
+    mod_time(int) - liczba (sekund/godzin/dni/tygodni/lat) określająca przedział czasu, w którym pliki, których kopię chcemy zrobić zostały zmodyfikowane
+    mod_format(str) - jednostka czasu dla mod_time: "s" - sekundy, "m" - minuty, "h" - godziny, "d" - dni, "w" - tygodnie, "y" - lata
+
+    """
     mod_formats = ["s", "m", "h", "d", "w", "y"]
     mod_index = mod_formats.index(mod_format)
     mod_div = [1, 60, 3600, 3600*24, 3600*24*7, 3600*24*365]
