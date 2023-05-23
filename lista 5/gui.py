@@ -82,10 +82,13 @@ center_x = int(screen_width / 2 - window_width / 2)
 center_y = int(screen_height / 2 - window_height / 2)
 root.geometry(f"{window_width}x{window_height}+{center_x}+{center_y}")
 
+"""
 background_image = ImageTk.PhotoImage(Image.open(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 5\dolars.jpg"))
 background_label = ttk.Label(root, image=background_image)
 background_label.place(x=0, y=0)
+"""
 
+my_font = font.Font(family="Georgia", size=9)
 
 frame5 = ttk.Frame(root)
 frame5.pack(pady=30)
@@ -94,7 +97,7 @@ frame1.pack(side=tk.TOP)
 frame2 = ttk.Frame(frame5)
 frame2.pack(pady=5)
 amount_int = tk.IntVar()
-amount_label = ttk.Label(frame1, text="Wpisz liczbę pieniędzy", font=("Montserrat", 9))
+amount_label = ttk.Label(frame1, text="Wpisz liczbę pieniędzy", font=my_font)
 amount_label.pack(side=tk.LEFT, padx=43)
 amount_entry = ttk.Entry(frame2, textvariable=amount_int, width=30)
 amount_entry.pack(padx=10, side=tk.LEFT)
@@ -105,7 +108,7 @@ frame3 = ttk.Frame(frame6)
 frame3.pack(pady=5)
 frame4 = ttk.Frame(frame6)
 frame4.pack()
-currency1_label = ttk.Label(frame1, text="Wybierz walutę początkową", font=("Montserrat", 9))
+currency1_label = ttk.Label(frame1, text="Wybierz walutę początkową", font=my_font)
 currency1_label.pack(side=tk.RIGHT, padx=33)
 currency1_string = tk.StringVar()
 currency1_combobox = ttk.Combobox(frame2, textvariable=currency1_string, width=30)
@@ -117,7 +120,7 @@ currency1_combobox.pack(padx=10, side=tk.RIGHT)
 pick_frame = ttk.Frame(root)
 pick_frame.pack()
 result_string = "0"
-result_label = ttk.Label(frame3, text="Wynik konwersji", font=("Montserrat", 9))
+result_label = ttk.Label(frame3, text="Wynik konwersji", font=my_font)
 result_label.pack(side=tk.LEFT, padx=57)
 result_window = ttk.Label(frame4, text=result_string, borderwidth=2, relief="solid", width = 30)
 result_window.pack(padx=10, side=tk.LEFT)
@@ -158,7 +161,7 @@ def close():
     root.destroy()
 
 
-currency2_label = ttk.Label(frame3, text="Wybierz walutę końcową", font=("Montserrat", 9))
+currency2_label = ttk.Label(frame3, text="Wybierz walutę końcową", font=my_font)
 currency2_label.pack(side=tk.RIGHT, padx=40)
 currency2_string = tk.StringVar()
 currency2_combobox = ttk.Combobox(frame4, textvariable=currency2_string, width=30)
@@ -166,15 +169,15 @@ currency2_combobox["values"] = currencies
 currency2_combobox["state"] = "readonly"
 currency2_combobox.pack(padx=10, side=tk.RIGHT)
 
-my_font = font.Font(family="Montserrat", size=9)
+style = ttk.Style()
 
 buttons_frame = ttk.Frame(root)
 buttons_frame.pack(pady=30)
-start_button = ttk.Button(buttons_frame, text="Oblicz", font=my_font, command=result_change)
-start_button.pack(side=tk.LEFT, padx=65)
-exit_button = ttk.Button(buttons_frame, text="Zakończ", font=my_font, command=close)
+start_button = ttk.Button(buttons_frame, text="Oblicz", style='my.TButton', command=result_change)
+start_button.pack(side=tk.LEFT, padx=60)
+exit_button = ttk.Button(buttons_frame, text="Zakończ", style='my.TButton', command=close)
 exit_button.pack(side=tk.RIGHT, padx=70)
 
-
+style.configure('my.TButton', font=("Georgia", 9))
 
 root.mainloop() 
