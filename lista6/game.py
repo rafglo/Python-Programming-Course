@@ -6,8 +6,9 @@ import pygame_textinput
 import json
 import pickle
 from PIL import Image
-#font
 
+pygame.init()
+#font
 def make_font(size):
     pygame.font.init()
     font = pygame.font.Font(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\PressStart2P-vaV7.ttf", size)
@@ -30,6 +31,14 @@ sprite_sheet_image = pygame.image.load(r"C:\Users\Rafal\OneDrive\Pulpit\programo
 rules_file = open(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\rules.txt", encoding="utf-8")
 rules = rules_file.read().splitlines()
 
+#sounds
+meteor_sound = pygame.mixer.Sound(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\assets\hq-explosion-6288.mp3")
+level_up_sound = pygame.mixer.Sound(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\assets\dzwiek_level.mp3")
+game_over_sound = pygame.mixer.Sound(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\assets\game-over-38511.mp3")
+main_song = pygame.mixer.Sound(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\assets\neon-gaming-128925.mp3")
+car_sound = pygame.mixer.Sound(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\assets\silnik.mp3")
+
+sounds = [meteor_sound, level_up_sound, game_over_sound, main_song, car_sound]
 #highscore file
 highscore_path = r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\highscore.pkl"
 def top_scores(highscore_path):
@@ -386,7 +395,7 @@ def main(window):
     clock = pygame.time.Clock()
 
     player = Player(427, 600, 162, 102)
-
+    
     if level % 3 == 0:
         METEOR_VEL += 0.5
         PLAYER_VEL += 0.5
@@ -408,6 +417,13 @@ def main(window):
             loss = True
             loss_count += 1
 
+        if level_up_count == 1:
+            level_up_sound.play()
+
+        if loss_count == 1:
+            car_sound.stop()
+            game_over_sound.play()
+
         if screen_shake > 0:
             screen_shake -= 1
         
@@ -426,7 +442,7 @@ def main(window):
                 break
 
         if loss:
-            if loss_count > FPS * 5:
+            if loss_count > FPS * 4:
                 run = False
             else:
                 continue
@@ -440,6 +456,7 @@ def main(window):
         for meteor in meteors:
             throw_meteor(meteor, METEOR_VEL)
             if collision_detection(player, meteor):
+                    meteor_sound.play()
                     meteors.remove(meteor)
                     lives -= 1
                     player.crash = True
@@ -448,8 +465,8 @@ def main(window):
                 meteors.remove(meteor)
     g.score = level
     g.current_menu = g.save_score
+    main_song.play()
     g.start(window)
-
 
 class Menu():
     def __init__(self, game):
@@ -537,6 +554,8 @@ class Menu():
                         self.state = "AUTHOR"
                 elif event.key == pygame.K_RETURN:
                     if self.state == "START":
+                        main_song.stop()
+                        car_sound.play(-1)
                         main(window)
                     elif self.state == "OPTIONS":
                         self.game.current_menu.run = False
@@ -632,6 +651,7 @@ class VolumeMenu(Menu):
                 if event.key == pygame.K_BACKSPACE:
                     self.game.current_menu.run = False
                     self.game.current_menu = self.game.options_menu
+                    self.game.vol = self.volume / 100
                 if event.key == pygame.K_DOWN or event.key == pygame.K_LEFT:
                     if self.volume == 0:
                         continue
@@ -823,7 +843,7 @@ class HighscoreMenu(Menu):
                 score = self.scores[i]["score"]
                 text1 = str(i+1) + ". " 
                 draw_text(win, text1, self.labelx - 70, self.labely + (i+1)*30, 20)
-                text2 = username + str(score)
+                text2 = username + " " + str(score)
                 draw_text(win, text2, self.labelx + 20, self.labely + (i+1)*30, 20)
             pygame.display.update()
     
@@ -882,13 +902,19 @@ class Game():
         self.playing = True
         self.score = 0
         self.difficulty = "NORMAL"
+        self.vol = 0.5
 
     def start(self, win):
         self.current_menu.display_menu(win)
 
 g = Game()
+main_song.play()
+
 while g.playing:
+    for sound in sounds:
+        sound.set_volume(g.vol)
     g.start(window)
+
     
 
 
