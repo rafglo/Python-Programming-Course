@@ -244,13 +244,29 @@ def draw(window, background_image, player, meteors, lives, level, lost=False, le
         draw_text(window, "LEVEL " + str(level), width/2, height/2, 50)
     pygame.display.update()
 
-
+#klasa pojazdu
 class Player(pygame.sprite.Sprite):
+    """
+    Class
+    Klasa opisująca pojazd gracza
+    
+    """
     COLOR = (255, 0, 0)
     SPRITES = {"front": frame_0}
     ANIMATION_DELAY = 10
 
     def __init__(self, x, y, width, height):
+        """
+        Function
+        Funkcja inicjalizująca obiekt klasy Player 
+        
+        Input
+        x(float) - współrzędna początkowa x pojazdu
+        y(float) - współrzędna początkowa y pojazdu
+        width(float) - szerokość grafiki pojazdu
+        height(float) - wysokość grafiki pojazdu
+        
+        """
         super().__init__()
         self.rect = pygame.Rect(x, y, width, height)
         self.x_vel = 0
@@ -261,10 +277,26 @@ class Player(pygame.sprite.Sprite):
         self.crash = False
 
     def move(self, dx):
+        """
+        Function
+        Funkcja przesuwająca pojazd
+        
+        Input
+        dx(float) - przesunięcie na osi x
+        
+        """
         if 0 < self.rect.x + dx < width - 54*3:
             self.rect.x += dx
 
     def move_left(self, vel):
+        """
+        Function
+        Funkcja skręcająca pojazd w lewo
+        
+        Input
+        vel(float) - prędkość pojazdu
+        
+        """
         self.x_vel = -vel
         if self.direction != "left":
             self.previous_direction = self.direction
@@ -272,6 +304,14 @@ class Player(pygame.sprite.Sprite):
             self.animation_count = 0
 
     def move_right(self, vel):
+        """
+        Function
+        Funkcja skręcająca pojazd w prawo
+        
+        Input
+        vel(float) - prędkość pojazdu
+        
+        """
         self.x_vel = vel
         if self.direction != "right":
             self.previous_direction = self.direction
@@ -279,13 +319,30 @@ class Player(pygame.sprite.Sprite):
             self.animation_count = 0
 
     def loop(self, fps):
+        """
+        Funkcja aktualizująca stan pojazdu
+        
+        Input
+        fps(int) - liczba klatek na sekundę
+        """
         self.move(self.x_vel)
         self.update_sprite()
     
     def draw(self, win):
+        """
+        Function
+        Funkcja rysująca grafikę pojazdu na ekranie
+        
+        Input
+        win(Surface) - ekran, na którym wyświetlana jest gra
+        """
         win.blit(self.sprite, (self.rect.x, self.rect.y))
 
     def update_sprite(self):
+        """
+        Function
+        Funkcja aktualizująca obecnie wyświetlaną grafikę pojazdu
+        """
         self.sprite = frame_0
         if self.x_vel != 0:
             frame_index = 0
@@ -360,12 +417,30 @@ class Player(pygame.sprite.Sprite):
         self.update()
 
     def update(self):
+        """
+        Function
+        Funkcja aktualizująca pozycję pojazdu
+        """
         self.rect = self.sprite.get_rect(topleft=(self.rect.x, self.rect.y))
         self.mask = pygame.mask.from_surface(self.sprite)
 
 class Meteor(pygame.sprite.Sprite):
+    """
+    Class
+    Klasa opisujaca spadające meteoryty
+    """
 
     def __init__(self, x, y, width, height):
+        """
+        Funkcja inicjalizująca obiekt klasy Meteor
+        
+        Input
+        x(float) - współrzędna początkowa x meteorytu
+        y(float) - współrzędna początkowa y meteorytu
+        width(float) - szerokość grafiki meteorytu
+        height(float) - wysokość grafiki meteorytu
+        
+        """
         super().__init__()
         self.rect = pygame.Rect(x, y, width, height)
         self.image = pygame.Surface((width, height), pygame.SRCALPHA)
@@ -376,16 +451,38 @@ class Meteor(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.image)
 
     def fall(self, dy):
+        """
+        Funkcja poruszająca meteoryt
+        
+        Input
+        dy(float) - przesunięcie meteorytu
+        """
         self.rect.y += dy
 
     def draw(self, win):
+        """
+        Function
+        Funkcja rysująca meteoryt na ekranie
+        
+        win(Surface) - ekran gry
+        """
         win.blit(self.image, (self.rect.x, self.rect.y))
 
     def update(self):
+        """
+        Funkcja aktualizująca pozycję meteorytu
+        """
         self.rect = self.image.get_rect(topleft=(self.rect.x, self.rect.y))
         self.mask = pygame.mask.from_surface(self.image)
 
 def handle_move(player):
+    """
+    Function
+    Funkcja sprawdzająca kliknięcia gracza na klawiaturze
+    
+    Input
+    player(Player) - pojazd gracza
+    """
     keys = pygame.key.get_pressed()
 
     if keys[pygame.K_LEFT] and not player.crash:
@@ -396,14 +493,44 @@ def handle_move(player):
         player.move_right(PLAYER_VEL)
 
 def collision_detection(player, meteor):
+    """
+    Function
+    Funkcja wykrywająca kolizję między pojazdem a meteorytem
+    
+    Input
+    player(Player) - pojazd gracza
+    meteor(Meteor) - meteoryt
+    
+    Output
+    True(bool) - jeśli występuje kolizja
+    """
     if pygame.sprite.collide_mask(player, meteor) != None:
         return True
 
 def throw_meteor(meteor, vel):
+    """
+    Function 
+    Funkcja zrzucająca meteoryt
+    
+    Input
+    meteor(Meteor) - meteoryt
+    vel(float) - prędkość meteorytu
+    """
     meteor.fall(vel)
     meteor.update()
 
 def draw_text(window, text, x, y, size):
+    """
+    Function
+    Funkcja wyświetlająca napis na ekranie
+    
+    Input
+    window(Surface) - ekran gry
+    text(string) - napis, który chcemy wyświetlić
+    x(float) - współrzędna x napisu
+    y(float) - współrzędna y napisu
+    size(int) - wielkość fontu
+    """
     font = make_font(size, r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\PressStart2P-vaV7.ttf")
     text_surface = font.render(text, True, (255,255,255))
     text_rect = text_surface.get_rect()
@@ -412,6 +539,13 @@ def draw_text(window, text, x, y, size):
 
 
 def main(window):
+    """
+    Function
+    Funkcja startująca grę
+    
+    Input
+    window(Surface) - ekran gry
+    """
     run = True
     level = 1
     dif = g.difficulty
@@ -515,7 +649,17 @@ def main(window):
     g.start(window)
 
 class Menu():
+    """
+    Class
+    Klasa opisująca menu główne
+    """
     def __init__(self, game):
+        """
+        Funkcja inicjalizująca obiekt klasy Menu
+        
+        Input
+        game(Game) - gra
+        """
         super().__init__()
         self.game = game
         self.cursor1_rect = pygame.Rect(0, 0, 20, 20)
@@ -532,10 +676,23 @@ class Menu():
         self.cursor2_rect.midtop = (self.startx + 15 + self.offset, self.starty)
 
     def draw_cursor(self, win):
+        """
+        Function 
+        Funkcja rysująca kursor na ekranie
+        
+        win(Surface) - ekran gry
+        """
         draw_text(win, "<", self.cursor1_rect.x, self.cursor1_rect.y, 15)
         draw_text(win, ">", self.cursor2_rect.x, self.cursor2_rect.y, 15)
 
     def display_menu(self, win):
+        """
+        Function
+        Funkcja wyświetlająca menu na ekranie
+        
+        Input
+        win(Surface) - ekran gry
+        """
         self.run = True
         while self.run:
             win.blit(background_image, (0,0))
@@ -551,6 +708,10 @@ class Menu():
             pygame.display.update()
 
     def move_cursor(self):
+        """
+        Function
+        Funkcja przesuwająca kursor 
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -620,7 +781,17 @@ class Menu():
                         quit()
 
 class OptionsMenu(Menu):
+    """
+    Class
+    Klasa opisująca menu opcji
+    """
     def __init__(self, game):
+        """
+        Function
+        Funkcja inicjalizująca obiekt klasy OptionsMenu
+        
+        game(Game) - gra
+        """
         super().__init__(game)
         self.game = game
         self.state = "VOLUME"
@@ -631,6 +802,13 @@ class OptionsMenu(Menu):
         self.cursor2_rect.midtop = (self.volx + 28 + self.offset, self.voly)
     
     def display_menu(self, win):
+        """
+        Function
+        Funkcja wyświetlająca menu na ekranie
+        
+        Input
+        win(Surface) - ekran gry
+        """
         self.run = True
         while self.run:
             win.blit(background_image, (0,0))
@@ -642,6 +820,10 @@ class OptionsMenu(Menu):
             pygame.display.update()
 
     def move_cursor(self):
+        """
+        Function 
+        Funkcja poruszająca kursor
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -668,7 +850,18 @@ class OptionsMenu(Menu):
                         self.game.current_menu = self.game.difficulty_menu
 
 class VolumeMenu(Menu):
+    """
+    Class
+    Klasa opisująca menu dźwięku
+    """
     def __init__(self, game):
+        """
+        Function
+        Funkcja inicjalizująca obiekt klasy VolumeMenu
+        
+        Input
+        game(Game) - gra
+        """
         super().__init__(game)
         self.game = game
         self.volume = 50
@@ -679,6 +872,13 @@ class VolumeMenu(Menu):
         self.cursor2_rect.midtop = (self.switchx - 3 + self.offset, self.switchy)
     
     def display_menu(self, win):
+        """
+        Function
+        Funkcja wyświetlająca menu na ekranie
+        
+        Input
+        win(Surface) - ekran gry
+        """
         self.run = True
         while self.run:
             win.blit(background_image, (0,0))
@@ -689,6 +889,9 @@ class VolumeMenu(Menu):
             pygame.display.update()
      
     def move_cursor(self):
+        """
+        Funkcja przesuwająca kursor
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -710,7 +913,18 @@ class VolumeMenu(Menu):
                         self.volume += 10
 
 class DifficultyMenu(Menu):
+    """
+    Class
+    Klasa opisująca menu wyboru poziomu trudności
+    """
     def __init__(self, game):
+        """
+        Function
+        Funkcja inicjalizująca obiekt klasy DifficultyMenu
+        
+        Input
+        game(Game) - gra
+        """
         super().__init__(game)
         self.game = game
         self.dif = "NORMAL"
@@ -720,6 +934,13 @@ class DifficultyMenu(Menu):
         self.cursor2_rect.midtop = (self.switchx + 28 + self.offset, self.switchy)
     
     def display_menu(self, win):
+        """
+        Function
+        Funkcja wyświetlająca menu na ekranie
+        
+        Input
+        win(Surface) - ekran gry
+        """
         self.run = True
         while self.run:
             win.blit(background_image, (0,0))
@@ -730,6 +951,9 @@ class DifficultyMenu(Menu):
             pygame.display.update()
     
     def move_cursor(self):
+        """
+        Funkcja przesuwająca kursor
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -758,13 +982,31 @@ class DifficultyMenu(Menu):
                         continue
 
 class RulesMenu(Menu):
+    """
+    Class
+    Klasa opisująca menu z zasadami
+    """
     def __init__(self, game):
+        """
+        Function
+        Funkcja inicjalizująca obiekt klasy RulesMenu
+        
+        Input
+        game(Game) - gra
+        """
         super().__init__(game)
         self.game = game
         self.rulesx, self.rulesy = width/2, height/2 - 50
         self.rules_text = rules
 
     def display_menu(self, win):
+        """
+        Function
+        Funkcja wyświetlająca menu na ekranie
+        
+        Input
+        win(Surface) - ekran gry
+        """
         self.run = True
         while self.run:
             win.blit(background_image, (0,0))
@@ -775,6 +1017,10 @@ class RulesMenu(Menu):
             pygame.display.update()
     
     def move_cursor(self):
+        """
+        Function 
+        Funkcja przesuwająca kursor
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -785,7 +1031,18 @@ class RulesMenu(Menu):
                     self.game.current_menu = self.game.main_menu
 
 class SaveScore(Menu):
+    """
+    Class
+    Klasa opisująca menu z zapisywaniem wyniku
+    """
     def __init__(self, game):
+        """
+        Function
+        Funkcja incjalizująca obiekt klasy SaveScore
+        
+        Input
+        game(Game) - gra
+        """
         super().__init__(game)
         self.game = game
         self.labelx, self.labely = self.rulesy = width/2, height/2 - 50
@@ -798,6 +1055,13 @@ class SaveScore(Menu):
         self.write = False
     
     def display_menu(self, win):
+        """
+        Function
+        Funkcja wyświetlająca menu na ekranie
+        
+        Input
+        win(Surface) - ekran gry
+        """
         self.run = True
         while self.run:
             win.blit(background_image, (0,0))
@@ -845,6 +1109,10 @@ class SaveScore(Menu):
             pygame.display.update()
     
     def move_cursor(self):
+        """
+        Function
+        Funkcja przesuwająca kursor
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -872,13 +1140,31 @@ class SaveScore(Menu):
                         self.choice = "YES"
 
 class HighscoreMenu(Menu):
+    """
+    Class
+    Klasa opisująca menu z najlepszymi wynikami
+    """
     def __init__(self, game):
+        """
+        Function
+        Funkcja inicjalizująca obiekt klasy HighscoreMenu
+        
+        Input
+        game(Game) - gra
+        """
         super().__init__(game)
         self.game = game
         self.labelx, self.labely = width/2, height/2 - 50
         self.scores = top_scores(highscore_path)
 
     def display_menu(self, win):
+        """
+        Function
+        Funkcja wyśiwetlająca menu na ekranie
+        
+        Input
+        win(Surface) - ekran gry
+        """
         self.run = True
         while self.run:
             win.blit(background_image, (0,0))
@@ -895,6 +1181,10 @@ class HighscoreMenu(Menu):
             pygame.display.update()
     
     def move_cursor(self):
+        """
+        Function
+        Funkcja przesuwająca kursor
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -905,7 +1195,18 @@ class HighscoreMenu(Menu):
                     self.game.current_menu = self.game.main_menu
 
 class AuthorMenu(Menu):
+    """
+    Class
+    Klasa opisująca menu z notką o autorze
+    """
     def __init__(self, game):
+        """
+        Function
+        Funkcja inicjalizująca obiekt klasy AuthorMenu
+        
+        Input
+        game(Game) - gra
+        """
         super().__init__(game)
         self.game = game
         self.labelx, self.labely = width/2, height/2 - 150
@@ -913,6 +1214,13 @@ class AuthorMenu(Menu):
         self.qr_code = qr
 
     def display_menu(self, win):
+        """
+        Function
+        Funkcja wyświetlająca menu na ekranie
+        
+        Input
+        win(Surface) - ekran gry
+        """
         self.run = True
         while self.run:
             win.blit(background_image, (0,0))
@@ -925,6 +1233,10 @@ class AuthorMenu(Menu):
             pygame.display.update()
 
     def move_cursor(self):
+        """
+        Function
+        Funkcja przesuwająca kursor
+        """
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -936,7 +1248,14 @@ class AuthorMenu(Menu):
             
         
 class Game():
+    """
+    Class
+    Klasa opisująca procesy gry
+    """
     def __init__(self):
+        """
+        Funkcja inicjalizująca obiekt klasy Game
+        """
         self.main_menu = Menu(self)
         self.options_menu = OptionsMenu(self)
         self.current_menu = self.main_menu
@@ -952,6 +1271,13 @@ class Game():
         self.vol = 0.5
 
     def start(self, win):
+        """
+        Function
+        Funkcja startująca grę
+        
+        Input
+        win(Surface) - ekran gry
+        """
         self.current_menu.display_menu(win)
 
 g = Game()
