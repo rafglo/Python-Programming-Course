@@ -1279,10 +1279,12 @@ class Game():
         win(Surface) - ekran gry
         """
         self.current_menu.display_menu(win)
-
+        
+#tworzymy proces gry
 g = Game()
 main_song.play()
 
+#puszczamy pętle gry i dźwięki
 while g.playing:
     for sound in sounds:
         sound.set_volume(g.vol)
