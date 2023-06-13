@@ -9,39 +9,72 @@ from PIL import Image
 
 pygame.init()
 #font
-def make_font(size):
+def make_font(size, path):
+    """
+    Function
+    Funkcja inicjalizująca font o danym rozmiarze
+
+    Input
+    size(int) - rozmiar fontu
+    path(str) - scieżka do pliku z fontem
+
+    Output
+    font(Font) - font do użycia
+
+    """
     pygame.font.init()
-    font = pygame.font.Font(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\PressStart2P-vaV7.ttf", size)
+    font = pygame.font.Font(path, size)
     return font
-#screen
+
+#okno
 pygame.display.set_caption("Asteroid City")
+
+#parametry okna
 width, height = 1000, 692
 window_size = (1000, 692)
 window = pygame.display.set_mode((width, height))
+
+#parametry gry
 PLAYER_VEL = 7
 FPS = 60
 
+#powierzchnia do screenshake'a
 display = pygame.Surface((1000, 692))
 
+#tło
 background_image = pygame.image.load(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\assets\background_min.jpg")
 
+#grafika pojazdu
 sprite_sheet_image = pygame.image.load(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\assets\spr_red_coupe_0 (1).png").convert_alpha()
 
 #rules file
 rules_file = open(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\rules.txt", encoding="utf-8")
 rules = rules_file.read().splitlines()
 
-#sounds
+#dźwięki
 meteor_sound = pygame.mixer.Sound(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\assets\hq-explosion-6288.mp3")
 level_up_sound = pygame.mixer.Sound(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\assets\dzwiek_level.mp3")
 game_over_sound = pygame.mixer.Sound(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\assets\game-over-38511.mp3")
 main_song = pygame.mixer.Sound(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\assets\neon-gaming-128925.mp3")
 car_sound = pygame.mixer.Sound(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\assets\silnik.mp3")
-
 sounds = [meteor_sound, level_up_sound, game_over_sound, main_song, car_sound]
-#highscore file
+
+#plik z highscorami
 highscore_path = r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\highscore.pkl"
+
 def top_scores(highscore_path):
+    """
+    Function 
+    Funkcja wyciągająca z pliku najlepsze wyniki
+
+    Input
+    highscore_path(str) - ścieżka do pliku z wynikami
+
+    Output
+    top_5_scores(list) - lista najlepszych pięciu wynikow
+    False(bool) - jeśli żaden wynik nie jest zapisany
+
+    """
     if os.path.getsize(highscore_path) > 0:
         with open(highscore_path, "rb") as f:
             highscore_list = pickle.load(f)
@@ -62,19 +95,21 @@ def top_scores(highscore_path):
         return top_5_scores
     else:
         return False
-#auhor file
+    
+#plik z opisem autora
 author_file = open(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\author.txt", encoding="utf-8").read()
 
 #github qr code
 qr = pygame.image.load(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\assets\github_qr.png")
 qr = pygame.transform.scale(qr, (220, 220))
 
+#grafika meteora
 meteor_img = pygame.image.load(r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\assets\flaming_meteor.png").convert_alpha()
 meteor_sur = pygame.Surface((32,32), pygame.SRCALPHA, 32)
 meteor_sur.blit(meteor_img, (0,0))
 meteor_image = pygame.transform.scale(meteor_sur, (32*3, 32*3))
 
-
+#wycinanie grafik do animacji pojazu
 img_0 = pygame.Surface((50,34)).convert_alpha()
 img_0.blit(sprite_sheet_image, (0,0), (8, 30, 50, 34))
 frame_0 = pygame.transform.scale(img_0, (3*50, 3*34))
@@ -95,25 +130,17 @@ img_p3.blit(sprite_sheet_image, (0,0), (294, 30, 54, 34))
 frame_p3 = pygame.transform.scale(img_p3, (3*54, 3*34))
 frame_p3.set_colorkey((0,0,0))
 
-"""img_l1 = pygame.Surface((49,34)).convert_alpha()
-img_l1.blit(sprite_sheet_image, (0,0), (422, 158, 49, 34))
-frame_l1 = pygame.transform.scale(img_l1, (3*49, 3*34))
-frame_l1.set_colorkey((0,0,0))"""
+#obracanie grafik z prawej strony na lewą
 frame_l1 = pygame.transform.flip(frame_p1, flip_x = True, flip_y=False)
 frame_l1.set_colorkey((0,0,0))
 
-"""img_l2 = pygame.Surface((50,34)).convert_alpha()
-img_l2.blit(sprite_sheet_image, (0,0), (325, 158, 50, 34))
-frame_l2 = pygame.transform.scale(img_l2, (3*50, 3*34))"""
 frame_l2 = pygame.transform.flip(frame_p2, flip_x = True, flip_y=False)
 frame_l2.set_colorkey((0,0,0))
 
-"""img_l3 = pygame.Surface((54,34)).convert_alpha()
-img_l3.blit(sprite_sheet_image, (0,0), (226, 158, 54, 34))
-frame_l3 = pygame.transform.scale(img_l3, (3*54, 3*34))"""
 frame_l3 = pygame.transform.flip(frame_p3, flip_x = True, flip_y=False)
 frame_l3.set_colorkey((0,0,0))
 
+#prawe grafiki do animacji wypadku
 img_p4 = pygame.Surface((73,30)).convert_alpha()
 img_0.blit(sprite_sheet_image, (0,0), (386, 32, 73, 30))
 frame_p4 = pygame.transform.scale(img_p4, (3*73, 3*30))
@@ -154,6 +181,7 @@ img_p11.blit(sprite_sheet_image, (0,0), (490, 100, 66, 26))
 frame_p11 = pygame.transform.scale(img_p11, (3*66, 3*26))
 frame_p11.set_colorkey((0,0,0))
 
+#lewe grafiki do animacji wypadku
 frame_l4 = pygame.transform.flip(frame_p4, flip_x = True, flip_y=False)
 frame_l4.set_colorkey((0,0,0))
 
@@ -178,6 +206,7 @@ frame_l10.set_colorkey((0,0,0))
 frame_l11 = pygame.transform.flip(frame_p11, flip_x = True, flip_y=False)
 frame_l11.set_colorkey((0,0,0))
 
+#listy z grafikami do animacji
 frames_left = [frame_0, frame_l1, frame_l2, frame_l3]
 frames_right = [frame_0, frame_p1, frame_p2, frame_p3]
 frames_left_to_right = [frame_l3, frame_l2, frame_l1, frame_0, frame_p1, frame_p2, frame_p3]
@@ -186,8 +215,23 @@ frames_right_crash = [frame_l4, frame_l5, frame_l6, frame_l7, frame_l8, frame_l9
 frames_left_crash = [frame_p4, frame_p5, frame_p6, frame_p7, frame_p8, frame_p9, frame_p10, frame_p11]
 frames_front_crash = [frame_0, frame_p6, frame_p7, frame_p8, frame_p9, frame_p10, frame_p11]
 
-#background
+
 def draw(window, background_image, player, meteors, lives, level, lost=False, level_up=False):
+    """
+    Function 
+    Funkcja wyświetlająca na ekranie elementy gry
+
+    Input
+    window(Surface) - powierzchnia, na której będziemy wyświetlać grafiki
+    background_image(Surface) - grafika z tłem
+    player(Surface) - grafika z pojazdem
+    meteors(list) - lista meteorytów
+    lives(int) - liczba żyć
+    level(int) - aktualny poziom
+    lost(bool) - czy gracz przegrał (stracił wszystkie życia)
+    level_up(bool) - czy gracz przeszedł poziom
+
+    """
     window.blit(background_image, (0,0))
     player.draw(window)
     for meteor in meteors:
@@ -360,7 +404,7 @@ def throw_meteor(meteor, vel):
     meteor.update()
 
 def draw_text(window, text, x, y, size):
-    font = make_font(size)
+    font = make_font(size, r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\PressStart2P-vaV7.ttf")
     text_surface = font.render(text, True, (255,255,255))
     text_rect = text_surface.get_rect()
     text_rect.center = (x,y)
@@ -765,7 +809,7 @@ class SaveScore(Menu):
             if self.choice == "YES":
                 self.write = True
                 draw_text(win, "ENTER YOUR NAME:", self.labelx - 100, self.yesy + 70, 20)
-                font = make_font(20)
+                font = make_font(20, r"C:\Users\Rafal\OneDrive\Pulpit\programowanie 2 sem\lista 6\PressStart2P-vaV7.ttf")
                 textinput = pygame_textinput.TextInputVisualizer(font_object=font)
                 textinput.antialias = False
                 textinput.font_color = (255, 255, 255)
